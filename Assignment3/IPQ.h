@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-#include <"Heap.h">
+#include "Heap.h"
 
 template<typename type>
 class IPQ{
@@ -15,7 +15,7 @@ class IPQ{
      * Heap: A Binary Tree to storage nodes
      */
     private:
-        Heap heap;
+        Heap<type> heap;
 
         unordered_map<string, Node*> indexedHeap;
 
@@ -46,6 +46,7 @@ class IPQ{
         std:: string & getMin();
 };
 
-bool IPQ::isEmpty() {
+template<typename type>
+bool IPQ<type>::isEmpty() {
     return this->heap.getSize() == 0;
 }

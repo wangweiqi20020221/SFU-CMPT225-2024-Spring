@@ -13,24 +13,23 @@ private:
     int depth;
     int priority;
 
-    // pointer to the left sub-node
-    Node* left;
-    // pointer to the right sub-nodes
-    Node* right;
+    Node* left;   // pointer to the left sub-node
+    Node* right;  // pointer to the right sub-nodes
 
     string taskID;
 
     type data;
 public:
-    Node(Node<type>* left, Node* right, type* data);
+    Node(type data, int depth);
+    Node(type data, int depth, Node<type>* left, Node<type>* right);
 
     bool isLeave();
 
     int getDepth();
     int getPriority();
 
-    Node& getLeft();
-    Node& getRight();
+    Node<type>* getLeft();
+    Node<type>* getRight();
 
     type getData();
 
@@ -38,20 +37,31 @@ public:
 
     void setData(type data);
     void setDepth(int depth);
+    void setLeft(Node<type>* node);
+    void setRight(Node<type>* node);
     void setPriority(int priority);
     void setTaskID(string taskID);
 };
 
 template<typename type>
-Node<type>::Node(Node<type>* left, Node<type>* right, type* data) {
-    this->left = left;
-    this->right = right;
+Node<type>::Node(type data, int depth) {
+    this->setLeft(nullptr);
+    this->setRight(nullptr);
     this->setData(data);
+    this->setDepth(depth);
+}
+
+template<typename type>
+Node<type>::Node(type data, int depth, Node<type>* left, Node<type>* right) {
+    this->setLeft(left);
+    this->setRight(right);
+    this->setData(data);
+    this->setDepth(depth);
 }
 
 template<typename type>
 bool Node<type>::isLeave() {
-    if(this->left == nullptr && this->right == nullptr) {
+    if(this->getLeft() == nullptr && this->getRight() == nullptr) {
         return true;
     } else {
         return false;
@@ -69,12 +79,12 @@ int Node<type>::getPriority() {
 }
 
 template<typename type>
-Node<type>& Node<type>::getLeft() {
+Node<type>* Node<type>::getLeft() {
     return this->left;
 }
 
 template<typename type>
-Node<type>& Node<type>::getRight() {
+Node<type>* Node<type>::getRight() {
     return this->right;
 }
 
@@ -96,6 +106,16 @@ void Node<type>::setData(type data) {
 template<typename type>
 void Node<type>::setDepth(int depth) {
     this->depth = depth;
+}
+
+template<typename type>
+void Node<type>::setLeft(Node<type>* node) {
+    this->left = node;
+}
+
+template<typename type>
+void Node<type>::setRight(Node<type>* node) {
+    this->right = node;
 }
 
 template<typename type>
