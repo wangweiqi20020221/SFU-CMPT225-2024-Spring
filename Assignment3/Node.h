@@ -27,7 +27,7 @@ public:
     bool isLeave();
 
     int getDepth();
-    int getPriority;
+    int getPriority();
 
     Node& getLeft();
     Node& getRight();
@@ -64,6 +64,11 @@ int Node<type>::getDepth() {
 }
 
 template<typename type>
+int Node<type>::getPriority() {
+    return this->priority;
+}
+
+template<typename type>
 Node<type>& Node<type>::getLeft() {
     return this->left;
 }
@@ -91,6 +96,11 @@ void Node<type>::setData(type data) {
 template<typename type>
 void Node<type>::setDepth(int depth) {
     this->depth = depth;
+}
+
+template<typename type>
+void Node<type>::setPriority(int priority) {
+    this->priority = priority;
 }
 
 template<typename type>
