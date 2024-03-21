@@ -29,7 +29,8 @@ public:
 
     void display();
     void display(int depth, Node<type>* node);
-    void percolate_up(Node<type>* node);
+    void extractMin();
+    void makeHeap();
     void setRoot(Node<type>* node);
     void swapNode(Node<type>* node1, Node<type>* node2);
 };
@@ -63,7 +64,7 @@ bool Heap<type>::insert(type data) {
             }
             node = node->getLeft();
         }
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
         node->setLeft(newNode);
         if(newNode->getData() < node->getData()) {
             this->swapNode(node, newNode);
@@ -89,7 +90,7 @@ bool Heap<type>::insert(type data, Node<type>* node) {
             return false;
         }
      } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
         node->setRight(newNode);
         if(node->getData() > newNode->getData()) {
             this->swapNode(node, newNode);
@@ -98,7 +99,7 @@ bool Heap<type>::insert(type data, Node<type>* node) {
     }
     
     if(node->isLeave() && node->getDepth() < this->getHeight()) {
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
         node->setLeft(newNode);
         if(node->getData() > newNode->getData()) {
             this->swapNode(node, newNode);
@@ -106,6 +107,26 @@ bool Heap<type>::insert(type data, Node<type>* node) {
         return true;
     }
     return false;
+}
+
+template<typename type>
+bool Heap<type>::remove(type data) {
+    Node<type>* node = this->find(data);
+    if(node == nullptr) {
+        return false;
+    } else if(node->isLeave()) {
+        delete node;
+        return true;
+    } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
+        node->getParent()->setLeft(node->getLeft());
+        node->getLeft()->setParent(node->getParent());
+        delete node;
+    } else if(node->getLeft() == nullptr && node->getRight() != nullptr) {
+        node->getParent()->setRight(node->getRight());
+        node->getRight()->setParent(node->getParent());
+    } else {
+        
+    }
 }
 
 template<typename type>
@@ -168,6 +189,8 @@ Node<type>* Heap<type>::find(type data, Node<type>* node) {
     }
     if(node->getData() == data) {
         return node;
+    } else if(node->getData() > data) {
+        return false;
     }
 
     if(this->find(data, node->getLeft()) == nullptr && this->find(data, node->getRight()) == nullptr) {

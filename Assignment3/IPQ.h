@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Heap.h"
+#include "Node.h"
 
 template<typename type>
 class IPQ{
@@ -17,7 +18,7 @@ class IPQ{
     private:
         Heap<type> heap;
 
-        unordered_map<string, Node*> indexedHeap;
+        unordered_map<string, int> indexedHeap;
 
     public:
         IPQ();

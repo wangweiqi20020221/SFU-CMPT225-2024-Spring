@@ -13,15 +13,15 @@ private:
     int depth;
     int priority;
 
-    Node* left;   // pointer to the left sub-node
-    Node* right;  // pointer to the right sub-nodes
+    Node<type>* left;   // pointer to the left sub-node
+    Node<type>* right;  // pointer to the right sub-nodes
+    Node<type>* parent;
 
     string taskID;
 
     type data;
 public:
-    Node(type data, int depth);
-    Node(type data, int depth, Node<type>* left, Node<type>* right);
+    Node(type data, int depth, Node<type>* parent = nullptr, Node<type>* left = nullptr, Node<type>* right = nullptr);
 
     bool isLeave();
 
@@ -30,6 +30,7 @@ public:
 
     Node<type>* getLeft();
     Node<type>* getRight();
+    Node<type>* getParent();
 
     type getData();
 
@@ -39,24 +40,18 @@ public:
     void setDepth(int depth);
     void setLeft(Node<type>* node);
     void setRight(Node<type>* node);
+    void setParent(Node<type>* node);
     void setPriority(int priority);
     void setTaskID(string taskID);
 };
 
 template<typename type>
-Node<type>::Node(type data, int depth) {
-    this->setLeft(nullptr);
-    this->setRight(nullptr);
+Node<type>::Node(type data, int depth, Node<type>* parent, Node<type>* left, Node<type>* right) {
     this->setData(data);
     this->setDepth(depth);
-}
-
-template<typename type>
-Node<type>::Node(type data, int depth, Node<type>* left, Node<type>* right) {
+    this->setParent(parent);
     this->setLeft(left);
     this->setRight(right);
-    this->setData(data);
-    this->setDepth(depth);
 }
 
 template<typename type>
@@ -89,6 +84,11 @@ Node<type>* Node<type>::getRight() {
 }
 
 template<typename type>
+Node<type>* Node<type>::getParent() {
+    return this->parent;
+}
+
+template<typename type>
 type Node<type>::getData() {
     return this->data;
 }
@@ -116,6 +116,11 @@ void Node<type>::setLeft(Node<type>* node) {
 template<typename type>
 void Node<type>::setRight(Node<type>* node) {
     this->right = node;
+}
+
+template<typename type>
+void Node<type>::setParent(Node<type>* node) {
+    this->parent = node;
 }
 
 template<typename type>
