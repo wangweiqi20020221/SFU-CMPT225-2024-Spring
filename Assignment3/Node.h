@@ -11,51 +11,47 @@ template<typename type>
 class Node{
 private:
     int depth;
-    int priority;
+    int index;
 
     Node<type>* left;   // pointer to the left sub-node
     Node<type>* right;  // pointer to the right sub-nodes
     Node<type>* parent;
 
-    string taskID;
-
     type data;
 public:
-    Node(type data, int depth, Node<type>* parent = nullptr, Node<type>* left = nullptr, Node<type>* right = nullptr);
+    Node(const type data, const int depth, const int index, Node<type>* parent = nullptr, Node<type>* left = nullptr, Node<type>* right = nullptr);
 
-    bool isLeave();
+    const bool isLeave();
 
-    int getDepth();
-    int getPriority();
+    const int getDepth();
+    const int getIndex();
 
     Node<type>* getLeft();
     Node<type>* getRight();
     Node<type>* getParent();
 
-    type getData();
+    const type getData();
 
-    string getTaskID();
-
-    void setData(type data);
-    void setDepth(int depth);
+    void setData(const type data);
+    void setDepth(const int depth);
     void setLeft(Node<type>* node);
     void setRight(Node<type>* node);
     void setParent(Node<type>* node);
-    void setPriority(int priority);
-    void setTaskID(string taskID);
+    void setIndex(const int index);
 };
 
 template<typename type>
-Node<type>::Node(type data, int depth, Node<type>* parent, Node<type>* left, Node<type>* right) {
+Node<type>::Node(const type data, const int depth, const int index, Node<type>* parent, Node<type>* left, Node<type>* right) {
     this->setData(data);
     this->setDepth(depth);
+    this->setIndex(index);
     this->setParent(parent);
     this->setLeft(left);
     this->setRight(right);
 }
 
 template<typename type>
-bool Node<type>::isLeave() {
+const bool Node<type>::isLeave() {
     if(this->getLeft() == nullptr && this->getRight() == nullptr) {
         return true;
     } else {
@@ -64,13 +60,13 @@ bool Node<type>::isLeave() {
 }
 
 template<typename type>
-int Node<type>::getDepth() {
+const int Node<type>::getDepth() {
     return this->depth;
 }
 
 template<typename type>
-int Node<type>::getPriority() {
-    return this->priority;
+const int Node<type>::getIndex() {
+    return this->index;
 }
 
 template<typename type>
@@ -89,22 +85,17 @@ Node<type>* Node<type>::getParent() {
 }
 
 template<typename type>
-type Node<type>::getData() {
+const type Node<type>::getData() {
     return this->data;
 }
 
 template<typename type>
-string Node<type>::getTaskID() {
-    return this->taskID;
-}
-
-template<typename type>
-void Node<type>::setData(type data) {
+void Node<type>::setData(const type data) {
     this->data = data;
 }
 
 template<typename type>
-void Node<type>::setDepth(int depth) {
+void Node<type>::setDepth(const int depth) {
     this->depth = depth;
 }
 
@@ -124,11 +115,6 @@ void Node<type>::setParent(Node<type>* node) {
 }
 
 template<typename type>
-void Node<type>::setPriority(int priority) {
-    this->priority = priority;
-}
-
-template<typename type>
-void Node<type>::setTaskID(string taskID) {
-    this->taskID = taskID;
+void Node<type>::setIndex(const int index) {
+    this->index = index;
 }

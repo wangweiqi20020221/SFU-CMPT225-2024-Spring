@@ -41,7 +41,7 @@ class IPQ{
         // Changes the heap array size to be max{i,10}
         void reserve(int i);
 
-        // Remove and return (a reference to) a task ID with smallest priority.
+        // Remove and return (a reference to) a task ID with the smallest priority.
         std::string & deleteMin();
         // Return (a reference to) a task ID with the smallest priority.
         std:: string & getMin();

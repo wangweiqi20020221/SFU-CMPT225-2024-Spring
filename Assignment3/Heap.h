@@ -14,23 +14,29 @@ private:
 public:
     Heap();
 
-    bool insert(type data);
-    bool insert(type data, Node<type>* node);
-    bool remove(type data);
+    bool insert(const type data);
+    bool insert(const type data, Node<type>* node);
+    bool remove(const type data);
 
-    int getHeight();
-    int getHeight(Node<type>* node);
-    int getSize();
-    int getSize(Node<type>* node);
+    const int getHeight();
+    const int getHeight(Node<type>* node);
+    const int getSize();
+    const int getSize(Node<type>* node);
 
     Node<type>* getRoot();
-    Node<type>* find(type data);
-    Node<type>* find(type data, Node<type>* node);
+    Node<type>* getLastLeave();
+    Node<type>* getLastLeave(Node<type>* node);
+    Node<type>* find(const type data);
+    Node<type>* find(const type data, Node<type>* node);
 
+    void clear();
     void display();
-    void display(int depth, Node<type>* node);
+    void display(const int depth, Node<type>* node);
     void extractMin();
     void makeHeap();
+    void makeHeap(Node<type>* node);
+    void percolateUp(Node<type>* node);
+    void percolateDown(Node<type>* node);
     void setRoot(Node<type>* node);
     void swapNode(Node<type>* node1, Node<type>* node2);
 };
@@ -41,13 +47,13 @@ Heap<type>::Heap() {
 }
 
 template<typename type>
-bool Heap<type>::insert(type data) {
+bool Heap<type>::insert(const type data) {
     if(this->find(data) != nullptr) {
         return false;
     }
 
     if(this->getRoot() == nullptr) {
-        Node<type>* newNode = new Node<type>(data, 0);
+        Node<type>* newNode = new Node<type>(data, 0, 0);
         this->setRoot(newNode);
         return true;
     }
@@ -57,85 +63,77 @@ bool Heap<type>::insert(type data) {
     } else {
         Node<type>* node = this->getRoot();
         while(node->getLeft() != nullptr) {
-            if(data < node->getLeft()->getData()) {
-                type tempData = node->getLeft()->getData();
-                node->getLeft()->setData(data);
-                data = tempData;
-            }
             node = node->getLeft();
         }
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, this->getSize() + 1, node);
         node->setLeft(newNode);
-        if(newNode->getData() < node->getData()) {
-            this->swapNode(node, newNode);
-        }
+        this->percolateUp(newNode);
         return true;
     }
 }
 
 template<typename type>
-bool Heap<type>::insert(type data, Node<type>* node) {
+bool Heap<type>::insert(const type data, Node<type>* node) {
     if(node->getLeft() != nullptr && node->getRight() != nullptr) {
         if(this->insert(data, node->getLeft())) {
-            if(node->getData() > node->getLeft()->getData()) {
-                this->swapNode(node, node->getLeft());
-            }
             return true;
         } else if(this->insert(data, node->getRight())) {
-            if(node->getData() > node->getRight()->getData()) {
-                this->swapNode(node, node->getRight());
-            }
             return true;
         } else {
             return false;
         }
      } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, this->getSize() + 1, node);
         node->setRight(newNode);
-        if(node->getData() > newNode->getData()) {
-            this->swapNode(node, newNode);
-        }
+        this->percolateUp(newNode);
         return true;
     }
     
     if(node->isLeave() && node->getDepth() < this->getHeight()) {
-        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, node);
+        Node<type>* newNode = new Node<type>(data, node->getDepth() + 1, this->getSize() + 1, node);
         node->setLeft(newNode);
-        if(node->getData() > newNode->getData()) {
-            this->swapNode(node, newNode);
-        }
+        this->percolateUp(newNode);
         return true;
     }
     return false;
 }
 
 template<typename type>
-bool Heap<type>::remove(type data) {
-    Node<type>* node = this->find(data);
+bool Heap<type>::remove(const type data) {
+Node<type>* node = this->find(data);
     if(node == nullptr) {
         return false;
-    } else if(node->isLeave()) {
+    } else if(node == this->getRoot() && this->getSize() == 1) {
         delete node;
+        this->setRoot(nullptr);
         return true;
-    } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
-        node->getParent()->setLeft(node->getLeft());
-        node->getLeft()->setParent(node->getParent());
-        delete node;
-    } else if(node->getLeft() == nullptr && node->getRight() != nullptr) {
-        node->getParent()->setRight(node->getRight());
-        node->getRight()->setParent(node->getParent());
+    }
+    Node<type>* lastLeave = this->getLastLeave();
+    this->swapNode(node, lastLeave);
+    if(lastLeave->getParent()->getLeft() == lastLeave) {
+        lastLeave->getParent()->setLeft(nullptr);
     } else {
-        
+        lastLeave->getParent()->setRight(nullptr);
+    }
+    delete lastLeave;
+    this->percolateDown(node);
+    return true;
+}
+
+template<typename type>
+const int Heap<type>::getHeight() {
+    /* Get the height of the heap.
+     * If the heap is empty, return -1.
+     */
+    if(this->getRoot() == nullptr) {
+        return -1;
+    } else {
+        return this->getHeight(this->getRoot());
     }
 }
 
 template<typename type>
-int Heap<type>::getHeight() {
-    return this->getHeight(this->getRoot());
-}
-
-template<typename type>
-int Heap<type>::getHeight(Node<type>* node) {
+const int Heap<type>::getHeight(Node<type>* node) {
     if(node->isLeave()) {
         return 0;
     } else if(node->getLeft() == nullptr) {
@@ -151,17 +149,24 @@ int Heap<type>::getHeight(Node<type>* node) {
 }
 
 template<typename type>
-int Heap<type>::getSize() {
-    return this->getSize(this->getRoot());
+const int Heap<type>::getSize() {
+    /* Get the size of the heap.
+     * If a heap is empty, return -1.
+     */
+    if(this->getRoot() == nullptr) {
+        return -1;
+    } else {
+        return this->getSize(this->getRoot());
+    }
 }
 
 template<typename type>
-int Heap<type>::getSize(Node<type>* node) {
+const int Heap<type>::getSize(Node<type>* node) {
     if(node->isLeave()) {
         return 1;
-    } else if(node->getLeft() == nullptr) {
+    } else if(node->getLeft() == nullptr && node->getRight() != nullptr) {
         return this->getSize(node->getRight()) + 1;
-    } else if(node->getRight() == nullptr) {
+    } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
         return this->getSize(node->getLeft()) + 1;
     } else {
         return this->getSize(node->getLeft()) + this->getSize(node->getRight()) + 1;
@@ -174,7 +179,39 @@ Node<type>* Heap<type>::getRoot() {
 }
 
 template<typename type>
-Node<type>* Heap<type>::find(type data) {
+Node<type>* Heap<type>::getLastLeave() {
+    return this->getLastLeave(this->getRoot());
+}
+
+template<typename type>
+Node<type>* Heap<type>::getLastLeave(Node<type>* node) {
+    if(node->getLeft() != nullptr && node->getRight() != nullptr) {
+        Node<type>* node1 = this->getLastLeave(node->getLeft());
+        Node<type>* node2 = this->getLastLeave(node->getRight());
+        if(node1 != nullptr && node2 != nullptr) {
+            return node2;
+        } else if(node1 != nullptr && node2 == nullptr) {
+            return node1;
+        } else if(node1 == nullptr && node2 != nullptr) {
+            return node2;
+        } else {
+            return nullptr;
+        }
+    } else if(node->getLeft() != nullptr && node->getRight() == nullptr) {
+        return this->getLastLeave(node->getLeft());
+    } else if(node->getLeft() == nullptr && node->getRight() != nullptr) {
+        return this->getLastLeave(node->getRight());
+    } else {
+        if(node->getDepth() == this->getHeight()) {
+            return node;
+        } else {
+            return nullptr;
+        }
+    }
+}
+
+template<typename type>
+Node<type>* Heap<type>::find(const type data) {
     if(this->getRoot() == nullptr) {
         return nullptr;
     } else {
@@ -183,14 +220,14 @@ Node<type>* Heap<type>::find(type data) {
 }
 
 template<typename type>
-Node<type>* Heap<type>::find(type data, Node<type>* node) {
+Node<type>* Heap<type>::find(const type data, Node<type>* node) {
     if(node == nullptr) {
         return nullptr;
     }
     if(node->getData() == data) {
         return node;
     } else if(node->getData() > data) {
-        return false;
+        return nullptr;
     }
 
     if(this->find(data, node->getLeft()) == nullptr && this->find(data, node->getRight()) == nullptr) {
@@ -203,6 +240,14 @@ Node<type>* Heap<type>::find(type data, Node<type>* node) {
 }
 
 template<typename type>
+void Heap<type>::clear() {
+    while(this->getRoot() != nullptr) {
+        this->extractMin();
+    }
+
+}
+
+template<typename type>
 void Heap<type>::display() {
     cout << "[";
     for(int depth = 0; depth <= this->getHeight(); depth++) {
@@ -212,7 +257,7 @@ void Heap<type>::display() {
 }
 
 template<typename type>
-void Heap<type>::display(int depth, Node<type>* node) {
+void Heap<type>::display(const int depth, Node<type>* node) {
     if(node->getDepth() == depth) {
         cout << node->getData() << ", ";
     } else {
@@ -226,8 +271,71 @@ void Heap<type>::display(int depth, Node<type>* node) {
 }
 
 template<typename type>
+void Heap<type>::extractMin() {
+    this->remove(this->getRoot()->getData());
+}
+
+template<typename type>
+void Heap<type>::makeHeap() {
+    this->makeHeap(this->getRoot());
+}
+
+template<typename type>
+void Heap<type>::makeHeap(Node<type>* node) {
+    this->percolateDown(node);
+    if(node->getLeft() != nullptr) {
+        makeHeap(node->getLeft());
+    }
+    if(node->getRight() != nullptr) {
+        makeHeap(node->getRight());
+    }
+}
+
+template<typename type>
 void Heap<type>::setRoot(Node<type>* node) {
     this->root = node;
+}
+
+template<typename type>
+void Heap<type>::percolateUp(Node<type>* node) {
+    while(node != this->getRoot() && node->getData() < node->getParent()->getData()) {
+        this->swapNode(node, node->getParent());
+        node = node->getParent();
+    }
+}
+
+template<typename type>
+void Heap<type>::percolateDown(Node<type>* node) {
+    while(node->getLeft() != nullptr || node->getRight() != nullptr) {
+        if(node->getLeft() == nullptr) {
+            if(node->getRight()->getData() < node->getData()) {
+                this->swapNode(node, node->getRight());
+                node = node->getRight();
+            } else {
+                break;
+            }
+        } else if(node->getRight() == nullptr) {
+            if(node->getLeft()->getData() < node->getData()) {
+                this->swapNode(node, node->getLeft());
+                node = node->getLeft();
+            } else {
+                break;
+            }
+        } else {
+            Node<type>* tempNode;
+            if(node->getLeft()->getData() < node->getRight()->getData()) {
+                tempNode = node->getLeft();
+            } else {
+                tempNode = node->getRight();
+            }
+            if(tempNode->getData() < node->getData()) {
+                this->swapNode(tempNode, node);
+            } else {
+                break;
+            }
+            node = tempNode;
+        }
+    }
 }
 
 template<typename type>
