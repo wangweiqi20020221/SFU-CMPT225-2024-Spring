@@ -5,8 +5,6 @@
  */
 #include <iostream>
 
-using namespace std;
-
 template<typename type>
 class Node{
 private:
@@ -21,7 +19,7 @@ private:
 public:
     Node(const type data, const int depth, const int index, Node<type>* parent = nullptr, Node<type>* left = nullptr, Node<type>* right = nullptr);
 
-    const bool isLeave();
+    const bool isLeaf();
 
     const int getDepth();
     const int getIndex();
@@ -51,7 +49,7 @@ Node<type>::Node(const type data, const int depth, const int index, Node<type>* 
 }
 
 template<typename type>
-const bool Node<type>::isLeave() {
+const bool Node<type>::isLeaf() {
     if(this->getLeft() == nullptr && this->getRight() == nullptr) {
         return true;
     } else {
