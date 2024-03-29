@@ -68,9 +68,10 @@ std::string& IPQ::deleteMin() {
 }
 
 std::string& IPQ::getMin() {
+    std::string* minTaskID;
     for(std::unordered_map<std::string, Node<int>*>::iterator it = this->indexedHeap.begin(); it != indexedHeap.end(); it++) {
         if(it->second == this->heap.getRoot()) {
-            std::string* minTaskID = const_cast<std::string*>(&it->first);
+            minTaskID = const_cast<std::string*>(&it->first);
             return* minTaskID;
         }
     }
@@ -86,9 +87,8 @@ void IPQ::insert(const std::string& tid, int p) {
 }
 
 void IPQ::updatePriority(const std::string& tid, int p) {
-    Node<int>* nodeFindResult = heap.find(p);
-    if(nodeFindResult == nullptr) {
-        if(this->heap.remove(p)) {
+    if(this->indexedHeap[tid] != nullptr) {
+        if(this->heap.remove(this->indexedHeap[tid]->getData())) {
             this->indexedHeap[tid] = this->heap.insert(p);
         }
     }
