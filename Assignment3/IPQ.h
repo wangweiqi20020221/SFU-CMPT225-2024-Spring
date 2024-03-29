@@ -46,29 +46,46 @@ public:
     void reserve(int i);
 };
 
-IPQ::IPQ() {}
+IPQ::IPQ(
+    /* Parameterless constructor function
+     */
+) {}
 
 IPQ::IPQ(std::vector<std::string> taskID, std::vector<int> priority) {
+    /* Parameter constructor
+     */
     for(int i = 0; i < taskID.size(); i++) {
         this->insert(taskID[i], priority[i]);
     }
 }
 
 bool IPQ::isEmpty() {
+    /* Returns true if the IPQ is empty; other wise returns false
+     */
     return this->indexedHeap.empty();
 }
 
 int IPQ::size() {
+    /* Returns the size of IPQ.
+     */
     return this->indexedHeap.size();
 }
 
 std::string& IPQ::deleteMin() {
+    /* Delete the node with the smallest priority.
+     * Return the task id of the node with new smallest priority.
+     */
     this->remove(this->getMin());
     return this->getMin();
 }
 
 std::string& IPQ::getMin() {
+<<<<<<< Updated upstream
     std::string* minTaskID;
+=======
+    /* Get the task id of the node with new smallest priority.
+     */
+>>>>>>> Stashed changes
     for(std::unordered_map<std::string, Node<int>*>::iterator it = this->indexedHeap.begin(); it != indexedHeap.end(); it++) {
         if(it->second == this->heap.getRoot()) {
             minTaskID = const_cast<std::string*>(&it->first);
@@ -78,26 +95,43 @@ std::string& IPQ::getMin() {
 }
 
 void IPQ::clear() {
+    /* Clear the IPQ class.
+     */
     heap.clear();
     this->indexedHeap.clear();
 }
 
 void IPQ::insert(const std::string& tid, int p) {
+    /* Insert a new node to IPQ using task id and priority.
+     */
     this->indexedHeap[tid] = this->heap.insert(p);
 }
 
 void IPQ::updatePriority(const std::string& tid, int p) {
+<<<<<<< Updated upstream
     if(this->indexedHeap[tid] != nullptr) {
         if(this->heap.remove(this->indexedHeap[tid]->getData())) {
+=======
+    /* Update a node's priority by its taskid.
+     */
+    Node<int>* nodeFindResult = heap.find(p);
+    if(nodeFindResult == nullptr) {
+        if(this->heap.remove(p)) {
+>>>>>>> Stashed changes
             this->indexedHeap[tid] = this->heap.insert(p);
         }
     }
 }
 
 void IPQ::remove(const std::string &tid) {
+    /* Remove a node from the IPQ by its task id.
+     */
     if(this->heap.remove(this->indexedHeap[tid]->getData())) {
         this->indexedHeap.erase(tid);
     }
 }
 
-void IPQ::reserve(int i) {}
+void IPQ::reserve(int i) {
+    /* Not uses because the heap is not arrey-bases.
+     */
+}
