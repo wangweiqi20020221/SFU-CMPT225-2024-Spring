@@ -2,6 +2,33 @@
 
 #include <iostream>
 
+void quick_sort_lofi(int arrey[], const int left, const int right) {
+    if (left >= right) {
+        return;
+    }
+    int temp_left = left;
+    int temp_right = left + 1;
+    // Set standard
+    int standard = arrey[left];
+    // Set left and right
+    while(temp_left < right) {
+        if (arrey[temp_right] < standard) {
+            // Swap
+            int temp = arrey[temp_left];
+            arrey[temp_left] = arrey[temp_right];
+            arrey[temp_right] = temp;
+            temp_left++;
+        }
+
+        temp_right++;
+    }
+    int temp = arrey[left];
+    arrey[left] = arrey[temp_left];
+    arrey[temp_left] = temp;
+    quick_sort_lofi(arrey, left, temp_left - 1);
+    quick_sort_lofi(arrey, temp_left + 1, right);
+};
+
 void quick_sort_original(int arrey[], const int left, const int right) {
 	if (left >= right) {
 		return;
